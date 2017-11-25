@@ -1569,10 +1569,6 @@
 					//		animate(transform = turn(GetPooledMatrix(), -270), time = 1, loop = -1)
 					//		animate(transform = turn(GetPooledMatrix(), -360), time = 1, loop = -1)
 
-					// If there is a chest item, see if its reagents can be dumped into the body
-					//if(src.chest_item != null)
-					//	src.chest_item_dump_reagents_on_flip()
-
 					if (istype(src.loc,/obj/))
 						var/obj/container = src.loc
 						boutput(src, "<span style=\"color:red\">You leap and slam your head against the inside of [container]! Ouch!</span>")
@@ -1906,14 +1902,6 @@
 						// If there is a chest item, see if it can be activated on fart (attack_self)
 						if (src.chest_item != null)
 							src.chest_item_attack_self_on_fart()
-							/*var/obj/item/fartItem = src.chest_item
-							src.show_text("You grunt and squeeze <B>[fartItem]</B> in your chest.")
-							fartItem.attack_self(src)
-							if (src.chest_item_sewn == 0)	// If item isn't sewn in, poop it onto the ground.
-								var/obj/item/outChestItem = src.chest_item
-								outChestItem.set_loc(get_turf(src))
-								src.chest_item = null
-								src.show_text("[fartItem] was shat out, that's got to hurt!")*/
 
 						if (iscluwne(src))
 							playsound(src.loc, 'sound/misc/Poo.ogg', 50, 1)
