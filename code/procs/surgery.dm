@@ -620,6 +620,7 @@
 			var/obj/item/outChestItem = patient.chest_item
 			outChestItem.set_loc(location)
 			patient.chest_item = null
+			patient.chest_item_sewn = 0
 			return 1
 
 /* ---------- SCALPEL - IMPLANT ---------- */
