@@ -21,6 +21,7 @@ var/list/genetics_computers = list()
 
 	var/print = 0
 	var/printlabel = null
+	var/page = null
 	var/backpage = null
 
 /obj/machinery/computer/genetics/New()
@@ -113,6 +114,8 @@ var/list/genetics_computers = list()
 	if (src.backpage)
 		botbutton_html += "<a href='?src=\ref[src];menu=[src.backpage]'><b>\<</b></a> "
 	botbutton_html += {"<a href='?src=\ref[src];menu=research'>Research Menu</a>  "}
+	botbutton_html += {"<a href='?src=\ref[src];refresh=1'>Refresh</a>  "}
+	//botbutton_html += {"<a href='?src=\ref[src];[winget(user, "genetics", "menu")]'>Refresh</a>  "}
 
 	if (genResearch.isResearched(/datum/geneticsResearchEntry/checker))
 		botbutton_html += {"<img alt="Analyser Cooldown" src="[resource("images/genetics/eqAnalyser.png")]" style="border-style: none">: [max(0,round((src.equipment[2] - world.time) / 10))] "}
@@ -229,6 +232,9 @@ var/list/genetics_computers = list()
 	if (!can_reach(usr,src))
 		boutput(usr, "<span style=\"color:red\">You can't reach the computer from there.</span>")
 		return
+
+	if(href_list["refresh"])
+		usr << link("byond://?src=\ref[src];menu=[page]")
 
 	if(href_list["viewpool"])
 		var/datum/bioEffect/E = locate(href_list["viewpool"])
@@ -986,7 +992,8 @@ var/list/genetics_computers = list()
 				if(!subject)
 					boutput(usr, "<b>SCANNER ALERT:</b> Subject has absconded.")
 					return
-				topbotbutton_html = ""
+
+				page = "potential"
 				backpage = null
 
 				topbotbutton_html = ui_build_clickable_genes("pool")
@@ -997,11 +1004,12 @@ var/list/genetics_computers = list()
 					info_html += "<a href='?src=\ref[src];rademitter=1'>Scramble DNA</a>"
 
 			if("sample_potential")
-				topbotbutton_html = ""
-
 				var/datum/computer/file/genetics_scan/sample = locate(href_list["sample_to_view_potential"])
 				if (sample_sanity_check(sample)) return
 
+				page = "sample_potential"
+
+				topbotbutton_html = ""
 				topbotbutton_html = ui_build_clickable_genes("sample_pool",sample)
 
 				info_html = "<p><b>Sample</b>: [sample.subject_name] <small>([sample.subject_uID])</small></p><br>"
@@ -1012,16 +1020,20 @@ var/list/genetics_computers = list()
 				if(!subject)
 					boutput(usr, "<b>SCANNER ALERT:</b> Subject has absconded.")
 					return
-				topbotbutton_html = ""
+
+				page = "mutations"
 				backpage = null
 
+				topbotbutton_html = ""
 				topbotbutton_html = ui_build_clickable_genes("active")
 
 				info_html = "<p><b>Occupant</b>: [subject ? "[subject.name]" : "None"]</p><br>"
 				info_html += "<p>Showing active mutations</p>"
 
 			if("research")
+				page = "research"
 				backpage = null
+
 				topbotbutton_html = "<p><b>Research Menu</b><br>"
 				topbotbutton_html += "<b>Research Material:</b> [genResearch.researchMaterial]/[genResearch.max_material]<br>"
 				topbotbutton_html += "<b>Research Budget:</b> [wagesystem.research_budget] Credits<br>"
@@ -1041,6 +1053,7 @@ var/list/genetics_computers = list()
 				info_html += "<a href='?src=\ref[src];menu=resfin'>Finished Research</a><br>"
 
 			if("resopen")
+				page = "resopen"
 				backpage = "research"
 				topbotbutton_html = "<p><b>Available Research</b> - ([genResearch.researchMaterial] Research Materials)</p>"
 				var/lastTier = -1
@@ -1067,6 +1080,7 @@ var/list/genetics_computers = list()
 						info_html += "<a href='?src=\ref[src];viewopenres=\ref[C]'>• [C.name] (Cost: [research_cost] * Time: [research_time] sec)</a><br>"
 
 			if("resrunning")
+				page = "resrunning"
 				backpage = "research"
 				topbotbutton_html = "<p><b>Research in Progress</b></p>"
 				info_html = "<p>"
@@ -1094,9 +1108,11 @@ var/list/genetics_computers = list()
 					genResearch.researchMaterial += amount
 
 			if("mutresearch")
+				page = "mutresearch"
+				backpage = "research"
+
 				topbotbutton_html = "<p><b>Mutation Research</b></p>"
 
-				backpage = "research"
 				info_html = "<p>"
 				var/datum/bioEffect/BE
 				for(var/X in bioEffectList)
@@ -1110,9 +1126,11 @@ var/list/genetics_computers = list()
 				info_html += "</p>"
 
 			if("storedmuts")
+				page = "storedmuts"
+				backpage = "research"
+
 				topbotbutton_html = "<p><b>Stored Mutations: [saved_mutations.len]/[genResearch.max_save_slots]</b></p>"
 
-				backpage = "research"
 				info_html = "<p><a href='?src=\ref[src];menu=combinemuts'>Combine Mutations</a><br><br>"
 				var/slot = 1
 				for(var/datum/bioEffect/BE in saved_mutations)
@@ -1121,9 +1139,11 @@ var/list/genetics_computers = list()
 				info_html += "</p>"
 
 			if("chromosomes")
+				page = "chromosomes"
+				backpage = "research"
+
 				topbotbutton_html = "<p><b>Stored Chromosomes</b></p>"
 
-				backpage = "research"
 				info_html = ""
 				var/slot = 1
 				for(var/datum/dna_chromosome/C in src.saved_chromosomes)
@@ -1132,9 +1152,11 @@ var/list/genetics_computers = list()
 				info_html += "</p>"
 
 			if("combinemuts")
+				page = "combinemuts"
+				backpage = "storedmuts"
+
 				topbotbutton_html = "<p><b>Combine Mutations: [saved_mutations.len]/[genResearch.max_save_slots]</b></p>"
 
-				backpage = "storedmuts"
 				info_html = "<p>"
 				var/slot = 1
 				info_html += "<a href='?src=\ref[src];do_combine=1'>Combine Marked Mutations</a><br>"
@@ -1150,9 +1172,11 @@ var/list/genetics_computers = list()
 				info_html += "</p>"
 
 			if("resfin")
+				page = "resfin"
+				backpage = "research"
+
 				topbotbutton_html = "<p><b>Finished Research</b></p>"
 				var/lastTier = -1
-				backpage = "research"
 				info_html = "<p>"
 				for(var/R in genResearch.researchTreeTiered)
 					if(text2num(R) == 0) continue
@@ -1166,7 +1190,9 @@ var/list/genetics_computers = list()
 				info_html += "</p>"
 
 			if("dna_samples")
+				page = "dna_samples"
 				backpage = "research"
+
 				topbotbutton_html = "<p><b>DNA Samples</b></p>"
 
 				info_html = "<p>"
