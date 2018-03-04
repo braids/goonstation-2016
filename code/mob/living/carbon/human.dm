@@ -886,6 +886,9 @@
 								else
 									message = "<B>[src]</B> [pick("spins", "twirls")] [thing] around in [his_or_her(src)] hand."
 									thing.on_spin_emote(src)
+								animate(thing, transform = turn(matrix(), 120), time = 0.7, loop = 3)
+								animate(transform = turn(matrix(), 240), time = 0.7)
+								animate(transform = null, time = 0.7)
 							else
 								message = "<B>[src]</B> wiggles [his_or_her(src)] fingers a bit.[prob(10) ? " Weird." : null]"
 				else
