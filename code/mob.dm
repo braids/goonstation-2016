@@ -2003,6 +2003,13 @@
 /mob/verb/whisper()
 	return
 
+/mob/verb/radiosay(message as text)
+	// If not a channel command, add semicolon
+	if (copytext(message, 1, 2) != ":")
+		message = ";[message]"
+	// Send on message to say verb
+	usr.say_verb(message)
+
 /mob/verb/say_verb(message as text)
 	set name = "say"
 	//&& !src.client.holder
@@ -2744,6 +2751,8 @@
 /mob/proc/get_valid_target_zones()
 	return list()
 
+/mob/verb/changezone(var/zone as text)
+	usr.zone_sel.select_zone(zone)
 
 /mob/proc/message_admin_on_attack(var/mob/attacker, var/attack_type = "attacks")
 	//Due to how attacking is set up we will need

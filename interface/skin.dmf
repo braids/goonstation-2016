@@ -385,6 +385,10 @@ macro "wasd"
 		name = "CTRL+X"
 		command = "say \"*flex\""
 		is-disabled = false
+	elem "radiosay"
+		name = "Y"
+		command = "radiosay"
+		is-disabled = false
 	elem "yawn_2"
 		name = "CTRL+Y"
 		command = "say \"*yawn\""
@@ -396,6 +400,30 @@ macro "wasd"
 	elem "wasd-southwest"
 		name = "Z+REP"
 		command = ".southwest"
+		is-disabled = false
+	elem "changezone_r_leg"
+		name = "Numpad1"
+		command = "changezone r_leg"
+		is-disabled = false
+	elem "changezone_l_leg"
+		name = "Numpad3"
+		command = "changezone l_leg"
+		is-disabled = false
+	elem "changezone_r_arm"
+		name = "Numpad4"
+		command = "changezone r_arm"
+		is-disabled = false
+	elem "changezone_chest"
+		name = "Numpad5"
+		command = "changezone chest"
+		is-disabled = false
+	elem "changezone_l_arm"
+		name = "Numpad6"
+		command = "changezone l_arm"
+		is-disabled = false
+	elem "changezone_head"
+		name = "Numpad8"
+		command = "changezone head"
 		is-disabled = false
 	elem "adminhelp"
 		name = "F1"

@@ -5,7 +5,6 @@ pantaloons - Host
 darsant - Host
 nannek - Host
 
-cymoro - Coder
 exadv1 - Coder
 0staf - Coder
 justicefries - Coder
