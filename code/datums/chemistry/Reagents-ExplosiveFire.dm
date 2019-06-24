@@ -244,7 +244,7 @@ datum
 						else if (holder.my_atom.loc.fingerprintslast) // Backpacks etc.
 							our_fingerprints = holder.my_atom.loc.fingerprintslast
 
-					//DEBUG("Heat-triggered smoke powder reaction: our user is [our_user ? "[our_user]" : "*null*"].[our_fingerprints ? " Fingerprints: [our_fingerprints]" : ""]")
+					//DEBUG_MESSAGE("Heat-triggered smoke powder reaction: our user is [our_user ? "[our_user]" : "*null*"].[our_fingerprints ? " Fingerprints: [our_fingerprints]" : ""]")
 					if (our_user && ismob(our_user))
 						logTheThing("combat", our_user, null, "Heat-triggered [src.name] chemical reaction [log_reagents(holder.my_atom)] at [T ? "[log_loc(T)]" : "null"].")
 					else
@@ -604,7 +604,8 @@ datum
 					playsound(source, "sound/weapons/flashbang.ogg", 25, 1)
 					for(var/atom/movable/M in view(2 + (volume > 30 ? 1:0), source))
 						if(M.anchored || M == source || M.throwing) continue
-						spawn(0) M.throw_at(get_edge_cheap(source, get_dir(source, M)), 20 + round(volume * 2), 1 + round(volume / 10))
+						M.throw_at(get_edge_cheap(source, get_dir(source, M)), 20 + round(volume * 2), 1 + round(volume / 10))
+						LAGCHECK(50)
 					if (holder)
 						holder.del_reagent(id)
 				return

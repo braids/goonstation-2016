@@ -55,7 +55,7 @@
 		"the medbay" = list(/area/station/medical/medbay, /area/station/medical/medbay/surgery),
 		"the station's cafeteria" = list(/area/station/crew_quarters/cafeteria),
 		"the net cafe" = list(/area/station/crew_quarters/info),
-		"the artifact lab" = list(/area/station/artifact),
+		"the artifact lab" = list(/area/station/science/artifact),
 		"the genetics lab" = list(/area/station/medical/research))
 
 	else if (map_setting == "DESTINY")
@@ -68,7 +68,7 @@
 		"the medbay" = list(/area/station/medical/medbay, /area/station/medical/medbay/lobby),
 		"the bar" = list(/area/station/crew_quarters/bar),
 		"the EVA storage" = list(/area/station/ai_monitored/storage/eva),
-		"the artifact lab" = list(/area/station/artifact),
+		"the artifact lab" = list(/area/station/science/artifact),
 		"the robotics lab" = list(/area/station/medical/robotics))
 
 	else // COG1

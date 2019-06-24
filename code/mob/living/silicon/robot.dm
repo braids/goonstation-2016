@@ -703,7 +703,7 @@
 				limbs_report += "Right leg"
 			if (!part_leg_l)
 				limbs_report += "Left leg"
-			var/limbs_missing = limbs_report.len ? dd_list2text(limbs_report, "; ") : 0
+			var/limbs_missing = limbs_report.len ? jointext(limbs_report, "; ") : 0
 			stat_cache = list(100 - min(get_brute_damage(), 100), 100 - min(get_burn_damage(), 100), limbs_missing)
 
 		stat("Structural integrity:", "[stat_cache[1]]%")
@@ -1355,7 +1355,7 @@
 					logTheThing("combat", user, src, "removes %target%'s brain at [log_loc(src)].") // Should be logged, really (Convair880).
 
 					src.uneq_active()
-					for (var/obj/item/roboupgrade/UP in src.contents) UP.upgrade_deactivate(src)
+					for (var/obj/item/roboupgrade/UPGR in src.contents) UPGR.upgrade_deactivate(src)
 
 					// Stick the player (if one exists) in a ghost mob
 					if (src.mind)
@@ -1377,8 +1377,8 @@
 					logTheThing("combat", user, src, "removes %target%'s ai_interface at [log_loc(src)].")
 
 					src.uneq_active()
-					for (var/obj/item/roboupgrade/UP in src.contents)
-						UP.upgrade_deactivate(src)
+					for (var/obj/item/roboupgrade/UPGR in src.contents)
+						UPGR.upgrade_deactivate(src)
 
 					user.put_in_hand_or_drop(src.ai_interface)
 					src.ai_interface = null
@@ -1391,17 +1391,17 @@
 						available_ai_shells -= src
 
 				if ("Remove an Upgrade")
-					var/obj/item/roboupgrade/UP = input("Which upgrade do you want to remove?", "Cyborg Maintenance") in src.upgrades
+					var/obj/item/roboupgrade/UPGR = input("Which upgrade do you want to remove?", "Cyborg Maintenance") in src.upgrades
 
-					if (!UP) return
+					if (!UPGR) return
 					if (get_dist(src.loc,user.loc) > 2 && (!src.bioHolder || !user.bioHolder.HasEffect("telekinesis")))
 						boutput(user, "<span style=\"color:red\">You need to move closer!</span>")
 						return
 
-					UP.upgrade_deactivate(src)
-					user.show_text("[UP] was removed!", "red")
-					src.upgrades.Remove(UP)
-					user.put_in_hand_or_drop(UP)
+					UPGR.upgrade_deactivate(src)
+					user.show_text("[UPGR] was removed!", "red")
+					src.upgrades.Remove(UPGR)
+					user.put_in_hand_or_drop(UPGR)
 
 					hud.update_upgrades()
 
@@ -1422,7 +1422,7 @@
 					if (!src.cell)
 						return
 
-					for (var/obj/item/roboupgrade/UP in src.contents) UP.upgrade_deactivate(src)
+					for (var/obj/item/roboupgrade/UPGR in src.contents) UPGR.upgrade_deactivate(src)
 					user.put_in_hand_or_drop(src.cell)
 					user.show_text("You remove [src.cell] from [src].", "red")
 					src.show_text("Your power cell was removed!", "red")
@@ -2919,8 +2919,8 @@
 		new /obj/item/roboupgrade/fireshield(src)
 		new /obj/item/roboupgrade/teleport(src)
 
-		for(var/obj/item/roboupgrade/UP in src.contents)
-			src.upgrades.Add(UP)
+		for(var/obj/item/roboupgrade/UPGR in src.contents)
+			src.upgrades.Add(UPGR)
 
 		..()
 

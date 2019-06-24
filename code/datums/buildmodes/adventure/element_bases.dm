@@ -12,6 +12,7 @@
 	icon = 'icons/obj/randompuzzles.dmi'
 	name = "You shouldn't see this"
 	desc = "AND YOU DAMN WELL SHOULDN'T EXAMINE IT"
+	var/id = null
 
 	New()
 		if (src.opacity)
@@ -74,6 +75,11 @@
 
 	proc/reset()
 		return
+
+/obj/adventurepuzzle/triggerable/targetable
+	var/obj/adventurepuzzle/invisible/target
+	setTarget(var/atom/A)
+		src.target = A
 
 // Hello, goonstation coder reading this piece of code below.
 // I'd like to ask you to stop judging me. Yes, I can hear the thoughts formulating in your brain right now.
@@ -209,6 +215,7 @@
 	icon = 'icons/obj/randompuzzles.dmi'
 	name = "You shouldn't see this"
 	desc = "AND YOU DAMN WELL SHOULDN'T EXAMINE IT"
+	var/id = null
 
 // WOULDN'T IT BE NICE TO HAVE TRAITS???
 /obj/item/adventurepuzzle/triggerer

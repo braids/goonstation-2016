@@ -35,7 +35,7 @@ datum
 			proc/explode(var/turf/T, expl_reason, del_holder=1)
 				message_admins("Nitroglycerin explosion (volume = [volume]) due to [expl_reason] at [showCoords(T.x, T.y, T.z)].")
 				var/list/fh = holder.my_atom.fingerprintshidden
-				var/context = "Fingerprints: [dd_list2text(fh)]"
+				var/context = "Fingerprints: [jointext(fh, "")]"
 				logTheThing("combat", usr, null, "is associated with a nitroglycerin explosion (volume = [volume]) due to [expl_reason] at [showCoords(T.x, T.y, T.z)]. Context: [context].")
 				explosion_new(usr, T, sqrt(10 * volume), log(10 * volume, 10))
 				holder.del_reagent("nitroglycerin")
@@ -1494,14 +1494,14 @@ datum
 				var/dir_temp = pick("L", "R")
 				var/speed_temp = text2num("[rand(1,6)].[rand(0,9)]")
 				animate_spin(M, dir_temp, speed_temp)
-				DEBUG("<span style=\"color:blue\"><b>Spun [M]: [dir_temp], [speed_temp]</b></span>") // <- What's this?
+				DEBUG_MESSAGE("<span style=\"color:blue\"><b>Spun [M]: [dir_temp], [speed_temp]</b></span>") // <- What's this?
 
 /*			reaction_obj(var/obj/O, var/volume)
 				if (volume >= 10)
 					var/dir_temp = pick("L", "R")
 					var/speed_temp = text2num("[rand(1,6)].[rand(0,9)]")
 					animate_spin(O, dir_temp, speed_temp)
-					DEBUG("<span style=\"color:blue\"><b>Spun [O]: [dir_temp], [speed_temp]</b></span>")
+					DEBUG_MESSAGE("<span style=\"color:blue\"><b>Spun [O]: [dir_temp], [speed_temp]</b></span>")
 */
 			on_add()
 				if (istype(holder) && istype(holder.my_atom) && hascall(holder.my_atom,"add_stam_mod_regen"))

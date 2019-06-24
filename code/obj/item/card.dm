@@ -155,7 +155,7 @@ GAUNTLET CARDS
 		all_accesses -= new_access
 		if (istype(src, /obj/item/card/id/syndicate)) // Nuke ops unable to exit their station (Convair880).
 			src.access += access_syndicate_shuttle
-		DEBUG("[get_access_desc(new_access)] added to [src]")
+		DEBUG_MESSAGE("[get_access_desc(new_access)] added to [src]")
 	src.emagged = 1
 
 /obj/item/card/id/verb/read()
@@ -207,10 +207,10 @@ GAUNTLET CARDS
 	input = strip_html(input, MAX_MESSAGE_LEN, 1)
 	if (strip_bad_stuff_only)
 		return input
-	var/list/namecheck = dd_text2list(trim(input), " ")
+	var/list/namecheck = splittext(trim(input), " ")
 	for(var/i = 1, i <= namecheck.len, i++)
 		namecheck[i] = capitalize(namecheck[i])
-	input = dd_list2text(namecheck, " ")
+	input = jointext(namecheck, " ")
 	return input
 
 /obj/item/card/id/temporary

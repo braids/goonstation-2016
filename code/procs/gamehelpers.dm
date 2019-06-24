@@ -39,28 +39,6 @@ var/list/stinkThingies = list("ass","taint","armpit","excretions","leftovers")
 		else
 			return "[pick(stinkExclamations)], it smells like \a [pick(stinkThings)]'s [pick(stinkThingies)] in here!"
 
-/proc/replacetext(haystack, needle, replace)
-    var
-        pos = findtext(haystack, needle)
-        needleLen = length(needle)
-        replaceLen = length(replace)
-    while(pos)
-        haystack = copytext(haystack, 1, pos) + replace + \
-            copytext(haystack, pos+needleLen)
-        pos = findtext(haystack, needle, pos+replaceLen)
-    return haystack
-
-/proc/replaceText(haystack, needle, replace)
-    var
-        pos = findtextEx(haystack, needle)
-        needleLen = length(needle)
-        replaceLen = length(replace)
-    while(pos)
-        haystack = copytext(haystack, 1, pos) + replace + \
-            copytext(haystack, pos+needleLen)
-        pos = findtextEx(haystack, needle, pos+replaceLen)
-    return haystack
-
 //For fuck's sake.
 /*
 /proc/bubblesort(list/L)
@@ -314,9 +292,9 @@ var/obj/item/dummy/click_dummy = new
 	if (istype(berserker,/datum/ailment_data/disease/) && berserker.stage > 1)
 		if (prob(10))
 			message = say_furious(message)
-		message = dd_replaceText(message, ".", "!")
-		message = dd_replaceText(message, ",", "!")
-		message = dd_replaceText(message, "?", "!")
+		message = replacetext(message, ".", "!")
+		message = replacetext(message, ",", "!")
+		message = replacetext(message, "?", "!")
 		message = uppertext(message)
 		var/addexc = rand(2,6)
 		while (addexc > 0)
@@ -331,7 +309,7 @@ var/obj/item/dummy/click_dummy = new
 		message = H.mutantrace.say_filter(message)
 
 #ifdef CANADADAY
-	if (prob(30)) message = dd_replaceText(message, "?", " Eh?")
+	if (prob(30)) message = replacetext(message, "?", " Eh?")
 #endif
 
 	return message
@@ -486,10 +464,6 @@ var/obj/item/dummy/click_dummy = new
 
 	if(!A || !src) return 0
 
-	defer_main_loops = 1
-	spawn(10)
-		defer_main_loops = 0
-
 	var/list/turfs_src = get_area_turfs(src.type)
 	var/list/turfs_trg = get_area_turfs(A.type)
 
@@ -499,14 +473,14 @@ var/obj/item/dummy/click_dummy = new
 		if(T.x < src_min_x || !src_min_x) src_min_x	= T.x
 		if(T.y < src_min_y || !src_min_y) src_min_y	= T.y
 
-	DEBUG("src_min_x = [src_min_x], src_min_y = [src_min_y]")
+	DEBUG_MESSAGE("src_min_x = [src_min_x], src_min_y = [src_min_y]")
 	var/trg_min_x = 0
 	var/trg_min_y = 0
 	for (var/turf/T in turfs_trg)
 		if(T.x < trg_min_x || !trg_min_x) trg_min_x	= T.x
 		if(T.y < trg_min_y || !trg_min_y) trg_min_y	= T.y
 
-	DEBUG("trg_min_x = [src_min_x], trg_min_y = [src_min_y]")
+	DEBUG_MESSAGE("trg_min_x = [src_min_x], trg_min_y = [src_min_y]")
 
 	var/list/refined_src = new/list()
 	for(var/turf/T in turfs_src)
@@ -547,7 +521,7 @@ var/obj/item/dummy/click_dummy = new
 						if (!istype(O, /obj) || istype(O, /obj/forcefield)) continue
 						O.set_loc(X)
 					for(var/mob/M in T)
-						DEBUG("Moving mob [M] from [T] to [X].")
+						DEBUG_MESSAGE("Moving mob [M] from [T] to [X].")
 						if(!istype(M,/mob)) continue
 						M.set_loc(X)
 

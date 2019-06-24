@@ -62,7 +62,7 @@
 	var/no_air = null
 	var/filler_turf				// if set, replacewithspace in this area instead replaces with this turf type
 
-	var/teleport_blocked = 0 //Cannot teleport into this area without some explicit set_loc thing.
+	var/teleport_blocked = 0 //Cannot teleport into this area without some explicit set_loc thing. 1 for most things, 2 for definitely everything.
 
 	var/workplace = 0 //Do people work here?
 
@@ -91,6 +91,7 @@
 			//If any mobs are entering, within a thing or otherwise
 			if (enteringMobs.len > 0)
 				for (var/mob/enteringM in enteringMobs) //each dumb mob
+					if( !(isliving(A) || iswraith(A)) ) continue
 					//Wake up a bunch of lazy darn critters
 					if (isliving(enteringM))
 						wake_critters()
@@ -179,7 +180,7 @@
 			var/penalty = 0
 			var/list/loose_items = list()
 			for (var/obj/O in T)
-				if (istype(O, /obj/item))
+				if (isitem(O))
 					penalty += 4
 					loose_items += O
 				if (istype(O, /obj/decal/cleanable))
@@ -234,6 +235,7 @@
 	RL_Lighting = 1
 	sound_environment = 8
 	teleport_blocked = 1
+	sound_group = "tinycave"
 
 /area/area_that_kills_you_if_you_enter_it //People entering VR or exiting VR with stupid exploits are jerks.
 	name = "Invisible energy field that will kill you if you step into it"
@@ -277,13 +279,13 @@
 /area/shuttle/escape/transit
 	icon_state = "eshuttle_transit"
 	sound_group = "eshuttle_transit"
-	var/warp_dir = "north" // fuck you
+	var/warp_dir = NORTH // fuck you
 
 	Entered(atom/movable/Obj,atom/OldLoc)
 		..()
 		if (ismob(Obj))
 			var/mob/M = Obj
-			if (src.warp_dir == "north" || src.warp_dir == "south")
+			if (src.warp_dir & NORTH || src.warp_dir & SOUTH)
 				M.addOverlayComposition(/datum/overlayComposition/shuttle_warp)
 			else
 				M.addOverlayComposition(/datum/overlayComposition/shuttle_warp/ew)
@@ -301,13 +303,13 @@
 	name = "Wormhole"
 	icon_state = "shuttle_transit_space_n"
 	teleport_blocked = 1
-	var/throw_dir = "north" // goddamnit
+	var/throw_dir = NORTH // goddamnit x2
 
 	Entered(atom/movable/Obj,atom/OldLoc)
 		..()
 		if (ismob(Obj))
 			var/mob/M = Obj
-			if (src.throw_dir == "north" || src.throw_dir == "south")
+			if (src.throw_dir == NORTH || src.throw_dir == SOUTH)
 				M.addOverlayComposition(/datum/overlayComposition/shuttle_warp)
 			else
 				M.addOverlayComposition(/datum/overlayComposition/shuttle_warp/ew)
@@ -325,13 +327,13 @@
 
 /area/shuttle_transit_space/south
 	icon_state = "shuttle_transit_space_s"
-	throw_dir = "south"
+	throw_dir = SOUTH
 /area/shuttle_transit_space/east
 	icon_state = "shuttle_transit_space_e"
-	throw_dir = "east"
+	throw_dir = EAST
 /area/shuttle_transit_space/west
 	icon_state = "shuttle_transit_space_w"
-	throw_dir = "west"
+	throw_dir = WEST
 
 /area/shuttle_particle_spawn
 	icon_state = "shuttle_transit_stars_n"
@@ -811,12 +813,97 @@
 	skip_sims = 1
 	sims_score = 30
 
+/area/drone
+	name = "Drone Assembly Outpost"
+	icon_state = "red"
+	sound_environment = 10
+	sound_group = "drone_factory"
+
+/area/drone/zone
+
+/area/drone/crew_quarters
+	name = "Crew Quarters"
+	icon_state = "showers"
+	sound_environment = 4
+
+/area/drone/engineering
+	name = "Engineering"
+	icon_state = "yellow"
+	sound_environment = 5
+
+/area/drone/office
+	name = "Design Office"
+	icon_state = "purple"
+
+/area/drone/assembly
+	name = "Assembly Floor"
+	icon_state = "storage"
+
+/area/sim/tdome
+	name = "Thunderdome"
+	icon_state = "medbay"
+	requires_power = 0
+	sound_environment = 9
+	virtual = 1
+
+/area/sim/tdome/tdome1
+	name = "Thunderdome (Team 1)"
+	icon_state = "green"
+	sound_environment = 9
+
+/area/sim/tdome/tdome2
+	name = "Thunderdome (Team 2)"
+	icon_state = "yellow"
+	sound_environment = 9
+
+/area/sim/tdome/tdomea
+	name = "Thunderdome (Admin.)"
+	icon_state = "purple"
+	sound_environment = 9
+
+/area/sim/tdome/tdomes
+	name = "Thunderdome (Spectator)"
+	icon_state = "purple"
+	sound_environment = 9
+
+/area/diner
+	sound_environment = 12
+
+/area/diner/hangar
+	name = "Diner Parking"
+	icon_state = "storage"
+
+/area/diner/kitchen
+	name = "Diner Kitchen"
+	icon_state = "purple"
+
+/area/diner/dining
+	name = "Diner Seating Area"
+	icon_state = "yellow"
+
+/area/diner/bathroom
+	name = "Diner Bathroom"
+	icon_state = "showers"
+
+/area/tech_outpost
+	name = "Tech Outpost"
+	icon_state = "storage"
+
+/area/iss
+	name = "Derelict Space Station"
+	icon_state = "derelict"
+
+/area/abandonedship
+	name = "Abandoned ship"
+	icon_state = "yellow"
+
+/area/salyut
+	name = "Soviet derelict"
+	icon_state = "yellow"
+
 /area/station
 	do_not_irradiate = 0
 
-/area/station/engine
-	sound_environment = 10
-	workplace = 1
 //These are shuttle areas, they must contain two areas in a subgroup if you want to move a shuttle from one
 //place to another. Look at escape shuttle for example.
 
@@ -1203,15 +1290,20 @@
 	workplace = 1
 	do_not_irradiate = 1
 
-/area/station/atmos/hookups_starboard
-	name = "Starboard Air Hookups"
-	icon_state = "atmos"
+/area/station/atmos/hookups
 	sound_environment = 3
 
-/area/station/atmos/hookups_port
-	name = "Port Air Hookups"
-	icon_state = "atmos"
-	sound_environment = 3
+/area/station/atmos/hookups/east
+	name = "East Air Hookups"
+
+/area/station/atmos/hookups/west
+	name = "West Air Hookups"
+
+/area/station/atmos/hookups/north
+	name = "North Air Hookups"
+
+/area/station/atmos/hookups/south
+	name = "South Air Hookups"
 
 /area/station/maintenance/
 	name = "Maintenance"
@@ -1220,53 +1312,57 @@
 	workplace = 1
 	do_not_irradiate = 1
 
-/area/station/maintenance/fpmaint
-	name = "Fore Port Maintenance"
-	icon_state = "fpmaint"
+/area/station/maintenance/NWmaint
+	name = "North West Maintenance"
+	icon_state = "NWmaint"
 
-/area/station/maintenance/fsmaint
-	name = "Fore Starboard Maintenance"
-	icon_state = "fsmaint"
+/area/station/maintenance/NEmaint
+	name = "North East Maintenance"
+	icon_state = "NEmaint"
 
-/area/station/maintenance/asmaint
-	name = "Aft Starboard Maintenance"
-	icon_state = "asmaint"
+/area/station/maintenance/SEmaint
+	name = "South East Maintenance"
+	icon_state = "SEmaint"
 
-/area/station/maintenance/apmaint
-	name = "Aft Port Maintenance"
-	icon_state = "apmaint"
+/area/station/maintenance/SWmaint
+	name = "South West Maintenance"
+	icon_state = "SWmaint"
 
 /area/station/maintenance/maintcentral
 	name = "Central Maintenance"
 	icon_state = "maintcentral"
 
-/area/station/maintenance/fore
-	name = "Fore Maintenance"
-	icon_state = "fmaint"
+/area/station/maintenance/north
+	name = "North Maintenance"
+	icon_state = "Nmaint"
 
-/area/station/maintenance/starboard
-	name = "Starboard Maintenance"
-	icon_state = "smaint"
+/area/station/maintenance/east
+	name = "East Maintenance"
+	icon_state = "Emaint"
 
-/area/station/maintenance/port
-	name = "Port Maintenance"
-	icon_state = "pmaint"
+/area/station/maintenance/west
+	name = "West Maintenance"
+	icon_state = "Wmaint"
 
-/area/station/maintenance/aft
-	name = "Aft Maintenance"
-	icon_state = "amaint"
+/area/station/maintenance/south
+	name = "South Maintenance"
+	icon_state = "Smaint"
 
-/area/station/maintenance/starboardsolar
-	name = "Starboard Solar Maintenance"
+/area/station/maintenance/eastsolar
+	name = "East Solar Maintenance"
+	icon_state = "SolarcontrolE"
+
+/area/station/maintenance/westsolar
+	name = "West Solar Maintenance"
+	icon_state = "SolarcontrolW"
+
+/area/station/maintenance/southsolar
+	name = "South Solar Maintenance"
 	icon_state = "SolarcontrolS"
 
-/area/station/maintenance/portsolar
-	name = "Port Solar Maintenance"
-	icon_state = "SolarcontrolP"
-
-/area/station/maintenance/aftsolar
-	name = "Aft Solar Maintenance"
-	icon_state = "SolarcontrolA"
+/area/station/maintenance/northsolar
+	name = "North Solar Maintenance"
+	icon_state = "SolarcontrolN"
 
 /area/station/maintenance/inner
 	name = "Inner Maintenance"
@@ -1285,21 +1381,21 @@
 	icon_state = "hallC"
 	sound_environment = 10
 
-/area/station/hallway/primary/fore
-	name = "Fore Primary Hallway"
-	icon_state = "hallF"
+/area/station/hallway/primary/north
+	name = "North Primary Hallway"
+	icon_state = "hallN"
 
-/area/station/hallway/primary/starboard
-	name = "Starboard Primary Hallway"
+/area/station/hallway/primary/east
+	name = "East Primary Hallway"
+	icon_state = "hallE"
+
+/area/station/hallway/primary/south
+	name = "South Primary Hallway"
 	icon_state = "hallS"
 
-/area/station/hallway/primary/aft
-	name = "Aft Primary Hallway"
-	icon_state = "hallA"
-
-/area/station/hallway/primary/port
-	name = "Port Primary Hallway"
-	icon_state = "hallP"
+/area/station/hallway/primary/west
+	name = "West Primary Hallway"
+	icon_state = "hallW"
 
 /area/station/hallway/primary/central
 	name = "Central Primary Hallway"
@@ -1308,6 +1404,26 @@
 /area/station/hallway/secondary/exit
 	name = "Escape Shuttle Hallway"
 	icon_state = "escape"
+
+/area/station/hallway/secondary/north
+	name = "North Secondary Hallway"
+	icon_state = "hallN2"
+
+/area/station/hallway/secondary/east
+	name = "East Secondary Hallway"
+	icon_state = "hallE2"
+
+/area/station/hallway/secondary/south
+	name = "South Secondary Hallway"
+	icon_state = "hallS2"
+
+/area/station/hallway/secondary/west
+	name = "West Secondary Hallway"
+	icon_state = "hallW2"
+
+/area/station/hallway/secondary/central
+	name = "Central Secondary Hallway"
+	icon_state = "hallC2"
 
 /area/station/hallway/secondary/construction
 	name = "Construction Area"
@@ -1322,7 +1438,7 @@
 	do_not_irradiate = 1
 
 /area/station/hallway/secondary/entry
-	name = "Arrival Shuttle Hallway"
+	name = "Main Hallway"
 	icon_state = "entry"
 
 /area/station/hallway/secondary/shuttle
@@ -1335,17 +1451,92 @@
 	sound_environment = 2
 	workplace = 1
 
-/area/station/artifact
-	name = "Artifact Lab"
-	icon_state = "artifact"
-	sound_environment = 2
-	workplace = 1
+/area/station/mining
+	name = "Mining"
+	icon_state = "mining"
+	sound_environment = 10
+
+/area/station/mining/refinery
+	name = "Mining Refinery"
+	icon_state = "miningg"
+
+/area/station/mining/magnet
+	name = "Mining Magnet Control Room"
+	icon_state = "miningp"
 
 /area/station/bridge
 	name = "Bridge"
 	icon_state = "bridge"
 	music = "signal"
 	sound_environment = 4
+
+/area/station/bridge/captain
+	name = "Captain's Office"
+	icon_state = "CAPN"
+
+/area/station/bridge/hos
+	name = "Head of Personnel's Office"
+	icon_state = "HOP"
+
+/area/station/crew_quarters/quarters_north
+	name = "North Crew Quarters"
+	icon_state = "crewquarters"
+	sound_environment = 3
+
+/area/station/crew_quarters/quarters_west
+	name = "West Crew Quarters"
+	icon_state = "crewquarters"
+	sound_environment = 3
+
+/area/station/crew_quarters/quarters_east
+	name = "East Crew Quarters"
+	icon_state = "crewquarters"
+	sound_environment = 3
+
+/area/station/crew_quarters/quarters_south
+	name = "South Crew Quarters"
+	icon_state = "crewquarters"
+	sound_environment = 3
+
+/area/station/crew_quarters/hos
+	name = "Head of Security's Quarters"
+	icon_state = "HOS"
+	sound_environment = 4
+
+/area/station/crew_quarters/md
+	name = "Medical Director's Quarters"
+	icon_state = "MD"
+	sound_environment = 4
+
+/area/station/crew_quarters/ce
+	name = "Chief Engineer's Quarters"
+	icon_state = "CE"
+	sound_environment = 4
+
+/area/station/crew_quarters/sauna
+	name = "Sauna"
+	icon_state = "crewquarters"
+	sound_environment = 2
+
+/area/station/crew_quarters/utility
+	name = "Utility Room"
+	icon_state = "orange"
+	sound_environment = 2
+
+/area/station/crew_quarters/lounge
+	name = "Crew Lounge"
+	icon_state = "crew_lounge"
+	sound_environment = 2
+
+/area/station/crew_quarters/lounge_port
+	name = "West Crew Lounge"
+	icon_state = "crew_lounge"
+	sound_environment = 2
+
+/area/station/crew_quarters/lounge_starboard
+	name = "East Crew Lounge"
+	icon_state = "crew_lounge"
+	sound_environment = 2
 
 /area/station/crew_quarters/locker
 	name = "Locker Room"
@@ -1357,10 +1548,20 @@
 	icon_state = "yellow"
 	sound_environment = 0
 
+/area/station/crew_quarters/radio
+	name = "Radio Lab"
+	icon_state = "green"
+	sound_environment = 2
+
 /area/station/crew_quarters/arcade
 	name = "Arcade"
 	icon_state = "yellow"
-	sound_environment = 1
+	sound_environment = 4
+
+/area/station/crew_quarters/arcade/dungeon
+	name = "Nerd Dungeon"
+	icon_state = "purple"
+	sound_environment = 5
 
 /area/station/crew_quarters/fitness
 	name = "Fitness Room"
@@ -1382,20 +1583,42 @@
 	icon_state = "kitchen"
 	sound_environment = 3
 
-/area/station/com_dish/comdish
-	name = "Communications Dish"
-	icon_state = "yellow"
-	RL_Lighting = 0 // ????
+/area/station/crew_quarters/clown
+	name = "Clown Hole"
+	icon_state = "storage"
+	do_not_irradiate = 1
 
-/area/station/com_dish/auxdish
-	name = "Auxilary Communications Dish"
-	icon_state = "yellow"
-	RL_Lighting = 0
+/area/station/crew_quarters/catering
+	name = "Catering Storage"
+	icon_state = "storage"
+	do_not_irradiate = 1
+
+/area/station/crew_quarters/bathroom
+	name = "Bathroom"
+	icon_state = "showers"
+
+/area/station/security/beepsky
+	name = "Beepsky's House"
+	icon_state = "storage"
+	do_not_irradiate = 1
+
+/area/station/crew_quarters/jazz
+	name = "Jazz Lounge"
+	icon_state = "purple"
+
+/area/station/crew_quarters/info
+	name = "Information Office"
+	icon_state = "purple"
 
 /area/station/crew_quarters/bar
 	name= "Bar"
 	icon_state = "bar"
-	sound_environment = 0
+	sound_environment = 4
+
+/area/station/crew_quarters/baroffice
+	name= "Bar Office"
+	icon_state = "bar_office"
+	sound_environment = 2
 
 /area/station/crew_quarters/heads
 	name = "Head of Personnel's Office"
@@ -1435,7 +1658,7 @@
 /area/station/crew_quarters/pool
 	name = "Pool Room"
 	icon_state = "showers"
-	sound_environment = 0
+	sound_environment = 3
 
 /area/station/crew_quarters/observatory
 	name = "Observatory"
@@ -1466,15 +1689,31 @@
 	name = "Public Garden"
 	icon_state = "park"
 
+/area/station/com_dish/comdish
+	name = "Communications Dish"
+	icon_state = "yellow"
+	RL_Lighting = 0 // ????
+
+/area/station/com_dish/auxdish
+	name = "Auxilary Communications Dish"
+	icon_state = "yellow"
+	RL_Lighting = 0
+
+/area/station/engine
+	sound_environment = 5
+	workplace = 1
+
 /area/station/engine/engineering
 	name = "Engineering"
 	icon_state = "engineering"
-	sound_environment = 12
 
 /area/station/engine/ptl
 	name = "Power Transmission Laser"
 	icon_state = "ptl"
-	sound_environment = 12
+
+/area/station/engine/engineering/ce
+	name = "Chief Engineer's Office"
+	icon_state = "CE"
 
 /area/mining/miningoutpost
 	name = "Mining Outpost"
@@ -1514,6 +1753,10 @@
 	name = "Hot Loop"
 	icon_state = "red"
 
+/area/station/engine/combustion_chamber
+	name = "Combustion Chamber"
+	icon_state = "combustion_chamber"
+
 /area/station/engine/coldloop
 	name = "Cold Loop"
 	icon_state = "purple"
@@ -1535,16 +1778,16 @@
 	name = "Electrical Substation"
 	do_not_irradiate = 1
 
-/area/station/engine/substation/port
-	name = "Port Electrical Substation"
+/area/station/engine/substation/west
+	name = "West Electrical Substation"
 	do_not_irradiate = 1
 
-/area/station/engine/substation/starboard
-	name = "Starboard Electrical Substation"
+/area/station/engine/substation/east
+	name = "East Electrical Substation"
 	do_not_irradiate = 1
 
-/area/station/engine/substation/fore
-	name = "Fore Electrical Substation"
+/area/station/engine/substation/north
+	name = "North Electrical Substation"
 	do_not_irradiate = 1
 
 /area/station/engine/proto
@@ -1561,59 +1804,6 @@
 	luminosity = 1
 	RL_Lighting = 0
 	requires_power = 0
-
-/area/mining
-	name = "Mining Outpost"
-	icon_state = "engine"
-	workplace = 1
-
-/area/mining/power
-	name = "Outpost Power Room"
-	icon_state = "showers"
-	sound_environment = 3
-
-/area/mining/manufacturing
-	name = "Outpost Manufacturing Room"
-	icon_state = "storage"
-	sound_environment = 12
-
-/area/mining/quarters
-	name = "Outpost Miner's Quarters"
-	icon_state = "locker"
-	sound_environment = 2
-
-/area/mining/comms
-	name = "Outpost Comms Room"
-	icon_state = "yellow"
-	sound_environment = 2
-
-/area/mining/dock
-	name = "Outpost Shuttle Dock"
-	icon_state = "storage"
-	sound_environment = 10
-
-/area/mining/exit_west
-	name = "Outpost West Airlock"
-	icon_state = "maintcentral"
-	sound_environment = 12
-
-/area/mining/exit_east
-	name = "Outpost East Airlock"
-	icon_state = "maintcentral"
-	sound_environment = 12
-
-/area/mining/exit_south
-	name = "Outpost South Airlock"
-	icon_state = "maintcentral"
-	sound_environment = 12
-
-/area/mining/magnet_control
-	name = "Mining Outpost Magnet Control"
-	icon_state = "miningp"
-
-/area/mining/refinery
-	name = "Mining Outpost Refinery"
-	icon_state = "yellow"
 
 /area/station/hangar
 	name = "Hangar"
@@ -1635,33 +1825,6 @@
 	teleport_blocked = 1
 	do_not_irradiate = 1
 
-/area/sim/tdome
-	name = "Thunderdome"
-	icon_state = "medbay"
-	requires_power = 0
-	sound_environment = 9
-	virtual = 1
-
-/area/sim/tdome/tdome1
-	name = "Thunderdome (Team 1)"
-	icon_state = "green"
-	sound_environment = 9
-
-/area/sim/tdome/tdome2
-	name = "Thunderdome (Team 2)"
-	icon_state = "yellow"
-	sound_environment = 9
-
-/area/sim/tdome/tdomea
-	name = "Thunderdome (Admin.)"
-	icon_state = "purple"
-	sound_environment = 9
-
-/area/sim/tdome/tdomes
-	name = "Thunderdome (Spectator)"
-	icon_state = "purple"
-	sound_environment = 9
-
 /area/station/medical
 	name = "Medical area"
 	icon_state = "medbay"
@@ -1677,9 +1840,33 @@
 	name = "Medbay Lobby"
 	icon_state = "medbay_lobby"
 
+/area/station/medical/medbay/cloner
+	name = "Cloning"
+	icon_state = "cloner"
+
+/area/station/medical/medbay/pharmacy
+	name = "Pharmacy"
+	icon_state = "chem"
+
+/area/station/medical/medbay/treatment1
+	name = "Treatment Room 1"
+	icon_state = "treat1"
+
+/area/station/medical/medbay/treatment2
+	name = "Treatment Room 2"
+	icon_state = "treat2"
+
+/area/station/medical/medbay/restroom
+	name = "Medbay Restroom"
+	icon_state = "blue"
+
 /area/station/medical/medbay/surgery
 	name = "Medbay Operating Theater"
 	icon_state = "medbay_surgery"
+
+/area/station/medical/medbay/surgery/storage
+	name = "Medical Storage"
+	icon_state = "blue"
 
 /area/station/medical/robotics
 	name = "Robotics"
@@ -1720,6 +1907,21 @@
 	icon_state = "medbooth"
 	sound_environment = 3
 
+/area/station/medical/breakroom
+	name = "Medbay Break Room"
+	icon_state = "medbay_break"
+	sound_environment = 3
+
+/area/station/medical/maintenance
+	name = "Medical Maintenance"
+	icon_state = "medical_maintenance"
+	sound_environment = 3
+
+/area/station/medical/staff
+	name = "Medbay Staff Area"
+	icon_state = "medbay_staff"
+	sound_environment = 3
+
 /area/station/security
 	teleport_blocked = 1
 	workplace = 1
@@ -1733,33 +1935,36 @@
 	name = "Brig"
 	icon_state = "brigcell"
 	sound_environment = 3
+	teleport_blocked = 0
 
 /area/station/security/checkpoint
-	name = "Security Checkpoint"
+	name = "Bridge Security Checkpoint"
 	icon_state = "checkpoint1"
 	sound_environment = 2
 
 	arrivals
-		name = "Arrivals Checkpoint"
+		name = "Arrivals Security Checkpoint"
 	escape
-		name = "Escape Hallway Checkpoint"
+		name = "Escape Hallway Security Checkpoint"
 	customs
-		name = "Customs Checkpoint"
+		name = "Customs Security Checkpoint"
 	sec_foyer
 		name = "Security Foyer Checkpoint"
 	podbay
-		name = "Pod Bay Checkpoint"
+		name = "Pod Bay Security Checkpoint"
 	chapel
-		name = "Chapel Checkpoint"
+		name = "Chapel Security Checkpoint"
 	cargo
-		name = "Cargo Checkpoint"
-	port
-		name = "Port Hallway Checkpoint"
-	starboard
-		name = "Starboard Hallway Checkpoint"
+		name = "Cargo Security Checkpoint"
+	west
+		name = "West Hallway Security Checkpoint"
+	east
+		name = "East Hallway Security Checkpoint"
+	medical
+		name = "Medical Security Checkpoint"
 
-/area/station/security/armory
-	name = "Armory"
+/area/station/security/armory //what the fuck this is not the real armory???
+	name = "Armory" //ai_monitored/armory is, shitty ass code
 	icon_state = "armory"
 	sound_environment = 2
 
@@ -1792,21 +1997,22 @@
 	workplace = 1
 	do_not_irradiate = 1
 
-/area/station/solar/fore
-	name = "Fore Solar Array"
+/area/station/solar/north
+	name = "North Solar Array"
 	icon_state = "yellow"
+	icon_state = "panelsN"
 
-/area/station/solar/aft
-	name = "Aft Solar Array"
-	icon_state = "panelsA"
-
-/area/station/solar/starboard
-	name = "Starboard Solar Array"
+/area/station/solar/south
+	name = "South Solar Array"
 	icon_state = "panelsS"
 
-/area/station/solar/port
-	name = "Port Solar Array"
-	icon_state = "panelsP"
+/area/station/solar/east
+	name = "East Solar Array"
+	icon_state = "panelsE"
+
+/area/station/solar/west
+	name = "West Solar Array"
+	icon_state = "panelsW"
 
 /area/station/solar/small_backup1
 	name = "Emergency Solar Array 1"
@@ -1820,20 +2026,10 @@
 	name = "Emergency Solar Array 3"
 	icon_state = "yellow"
 
-/area/syndicate_station
-	name = "Syndicate Station"
-	icon_state = "yellow"
-	requires_power = 0
-	sound_environment = 2
-	teleport_blocked = 1
-	sound_group = "syndicate_station"
-
-/area/wizard_station
-	name = "Wizard's Den"
-	icon_state = "yellow"
-	requires_power = 0
-	sound_environment = 4
-	teleport_blocked = 1
+/area/station/quartermaster
+	name = "Quartermasters"
+	icon_state = "quart"
+	workplace = 1
 
 /area/station/quartermaster/office
 	name = "Quartermaster's Office"
@@ -1846,10 +2042,15 @@
 	sound_environment = 2
 	do_not_irradiate = 1
 
-/area/station/quartermaster
-	name = "Quartermasters"
-	icon_state = "quart"
-	workplace = 1
+/area/station/quartermaster/magnet
+	name = "Magnet Control Room"
+	icon_state = "green"
+	sound_environment = 10
+
+/area/station/quartermaster/refinery
+	name = "Refinery"
+	icon_state = "green"
+	sound_environment = 10
 
 /area/station/janitor
 	name = "Janitor's Office"
@@ -1888,6 +2089,10 @@
 	icon_state = "genstorage"
 	do_not_irradiate = 1
 
+/area/station/science/restroom
+	name = "Research Restroom"
+	icon_state = "purple"
+
 /area/station/science/bot_storage
 	name = "Robot Depot"
 	icon_state = "toxstorage"
@@ -1904,6 +2109,10 @@
 /area/station/science/lab
 	name = "Toxin Lab"
 	icon_state = "toxlab"
+
+/area/station/science/artifact
+	name = "Artifact Lab"
+	icon_state = "artifact"
 
 /area/station/science/storage
 	name = "Toxin Storage"
@@ -1923,7 +2132,6 @@
 	icon_state = "yellow"
 	do_not_irradiate = 1
 
-
 /area/station/test_area
 	name = "Toxin Test Area"
 	icon_state = "toxtest"
@@ -1936,7 +2144,7 @@
 	icon_state = "chapel"
 	sound_environment = 7
 
-/area/station/chapel/main/main
+/area/station/chapel/main/main //wtf why is this a thing
 
 /area/station/chapel/office
 	name = "Chapel Office"
@@ -2003,17 +2211,281 @@
 	icon_state = "storage"
 	teleport_blocked = 1
 
-/area/iss
-	name = "Derelict Space Station"
-	icon_state = "derelict"
+// cogmap new areas ///////////
 
-/area/abandonedship
-	name = "Abandoned ship"
+/area/station/hangar
+	name = "Hangar"
+	icon_state = "hangar"
+	workplace = 1
+	do_not_irradiate = 1
+
+	main
+		name = "Pod Bay"
+		sound_environment = 10
+	catering
+		name = "Catering Dock"
+	arrivals
+		name = "Arrivals Dock"
+	sec
+		name = "Secure Dock"
+		teleport_blocked = 1
+	engine
+		name = "Engineering Dock"
+	qm
+		name = "Cargo Dock"
+	escape
+		name = "Escape Dock"
+	science
+		name = "Research Dock"
+		teleport_blocked = 1
+
+/area/station/hydroponics
+	name = "Hydroponics"
+	icon_state = "hydro"
+	workplace = 1
+
+/area/station/hydroponics/lobby
+	name = "Hydroponics Lobby"
+	icon_state = "green"
+
+/area/station/owlery
+	name = "Owlery"
+	icon_state = "yellow"
+	sound_environment = 15
+	do_not_irradiate = 1
+
+/area/station/aviary
+	name = "Aviary"
+	icon_state = "aviary"
+	sound_environment = 15
+	do_not_irradiate = 1
+
+/area/station/habitat
+	name = "Habitat Dome"
+	icon_state = "aviary"
+	sound_environment = 15
+	do_not_irradiate = 1
+	RL_Lighting = 0
+
+/area/station/catwalk
+	icon_state = "yellow"
+	RL_Lighting = 0
+
+/area/station/catwalk/north
+	name = "North Maintenance Catwalk"
+
+/area/station/catwalk/south
+	name = "South Maintenance Catwalk"
+
+/area/station/catwalk/west
+	name = "West Maintenance Catwalk"
+
+/area/station/catwalk/east
+	name = "East Maintenance Catwalk"
+
+/area/station/routingdepot
+	name = "Routing Depot"
+	icon_state = "depot"
+	sound_environment = 13
+	do_not_irradiate = 1
+
+	catering
+		name = "Cafeteria Router"
+
+	eva
+		name = "EVA Router"
+
+	engine
+		name = "Engine Router"
+
+	medsci
+		name = "Med-Sci Router"
+
+	security
+		name = "Security Router"
+
+	airbridge
+		name = "Airbridge Router"
+
+/area/research_outpost
+	name = "Research Outpost"
+	icon_state = "blue"
+	do_not_irradiate = 1
+
+	hangar
+		name = "Research Outpost Hangar"
+		icon_state = "hangar"
+
+	chamber
+		name = "Research Outpost Test Chamber"
+		icon_state = "yellow"
+
+///////////////////////////////
+
+/area/listeningpost
+	name = "Listening Post"
+	icon_state = "brig"
+	teleport_blocked = 1
+	do_not_irradiate = 1
+
+/area/listeningpost/power
+	name = "Listening Post Control Room"
+	icon_state = "engineering"
+
+/area/listeningpost/solars
+	name = "Listening Post Solar Array"
+	icon_state = "yellow"
+	requires_power = 0
+	luminosity = 1
+	RL_Lighting = 0
+
+///////////////////////////////
+
+/area/syndicate_station
+	name = "Syndicate Station"
+	icon_state = "yellow"
+	requires_power = 0
+	sound_environment = 2
+	teleport_blocked = 1
+	sound_group = "syndicate_station"
+
+///////////////////////////////
+
+/area/wizard_station
+	name = "Wizard's Den"
+	icon_state = "yellow"
+	requires_power = 0
+	sound_environment = 4
+	teleport_blocked = 1
+
+///////////////////////////////
+
+/area/station/ai_monitored
+	name = "AI Monitored Area"
+	var/obj/machinery/camera/motion/motioncamera = null
+	workplace = 1
+
+/area/station/ai_monitored/New()
+	..()
+	// locate and store the motioncamera
+	spawn (20) // spawn on a delay to let turfs/objs load
+		for (var/obj/machinery/camera/motion/M in src)
+			motioncamera = M
+			return
+	return
+
+/area/station/ai_monitored/Entered(atom/movable/O)
+	..()
+	if (istype(O, /mob) && motioncamera)
+		motioncamera.newTarget(O)
+//
+/area/station/ai_monitored/Exited(atom/movable/O)
+	..()
+	if (istype(O, /mob) && motioncamera)
+		motioncamera.lostTarget(O)
+
+/area/station/ai_monitored/storage/eva
+	name = "EVA Storage"
+	icon_state = "eva"
+	sound_environment = 12
+
+/area/station/ai_monitored/storage/secure
+	name = "Secure Storage"
+	icon_state = "storage"
+	sound_environment = 12
+
+/area/station/ai_monitored/storage/emergency
+	name = "Emergency Storage"
+	icon_state = "storage"
+	sound_environment = 12
+
+/area/station/ai_monitored/armory
+	name = "Armory"
+	icon_state = "armory"
+	sound_environment = 2
+	teleport_blocked = 1
+
+///////////////////////////////
+
+///////////////////// zewaka-old mining outpost
+
+/area/mining
+	name = "Mining Outpost"
+	icon_state = "engine"
+	workplace = 1
+
+/area/mining/power
+	name = "Outpost Power Room"
+	icon_state = "showers"
+	sound_environment = 3
+
+/area/mining/manufacturing
+	name = "Outpost Manufacturing Room"
+	icon_state = "storage"
+	sound_environment = 12
+
+/area/mining/quarters
+	name = "Outpost Miner's Quarters"
+	icon_state = "locker"
+	sound_environment = 2
+
+/area/mining/comms
+	name = "Outpost Comms Room"
+	icon_state = "yellow"
+	sound_environment = 2
+
+/area/mining/dock
+	name = "Outpost Shuttle Dock"
+	icon_state = "storage"
+	sound_environment = 10
+
+/area/mining/exit_west
+	name = "Outpost West Airlock"
+	icon_state = "maintcentral"
+	sound_environment = 12
+
+/area/mining/exit_east
+	name = "Outpost East Airlock"
+	icon_state = "maintcentral"
+	sound_environment = 12
+
+/area/mining/exit_south
+	name = "Outpost South Airlock"
+	icon_state = "maintcentral"
+	sound_environment = 12
+
+/area/mining/magnet_control
+	name = "Mining Outpost Magnet Control"
+	icon_state = "miningp"
+
+/area/mining/refinery
+	name = "Mining Outpost Refinery"
 	icon_state = "yellow"
 
-/area/salyut
-	name = "Soviet derelict"
+/area/mining/hangar/
+	name = "Mining Dock"
+	icon_state = "storage"
+	sound_environment = 10
+	workplace = 1
+
+/area/mining/mainasteroid
+	name = "Main Asteroid"
+	icon_state = "green"
+	RL_Lighting = 0
+
+////////////////////////////////////
+
+/area/russian
+	name = "Kosmicheskoi Stantsii 13"
+	icon_state = "green"
+	sound_environment = 13
+
+/area/russian/radiation
+	name = "Kosmicheskoi Stantsii 13"
 	icon_state = "yellow"
+	permarads = 1
+
+///////////////////////////////
 
 /*
 /area/derelict
@@ -2097,283 +2569,138 @@
 	name = "Control room"
 	icon_state = "bridge"*/
 
+/////////////////////////zewaka - old prison area
 
-// cogmap new areas ///////////
-
-/area/station/crew_quarters/clown
-	name = "Non-Area"
-	icon_state = "storage"
-	do_not_irradiate = 1
-
-/area/station/crew_quarters/catering
-	name = "Catering Storage"
-	icon_state = "storage"
-	do_not_irradiate = 1
-
-/area/station/crew_quarters/bathroom
-	name = "Bathroom"
-	icon_state = "showers"
-
-/area/station/security/beepsky
-	name = "Beepsky's House"
-	icon_state = "storage"
-	do_not_irradiate = 1
-
-/area/station/crew_quarters/jazz
-	name = "Jazz Lounge"
-	icon_state = "purple"
-
-/area/station/crew_quarters/info
-	name = "Information Office"
-	icon_state = "purple"
-
-/area/station/hangar/main
-	name = "Pod Bay"
-	icon_state = "storage"
-	sound_environment = 10
-
-/area/station/hangar/sec
-	name = "Secure Dock"
-	icon_state = "storage"
-
-/area/station/hangar/catering
-	name = "Catering Dock"
-	icon_state = "storage"
-
-/area/station/hangar/engine
-	name = "Engineering Dock"
-	icon_state = "storage"
-
-/area/station/hangar/qm
-	name = "Cargo Dock"
-	icon_state = "storage"
-
-/area/station/hangar
-	name = "Hangar"
-	icon_state = "storage"
-	workplace = 1
-	do_not_irradiate = 1
-
-/area/station/hangar/arrivals
-	name = "Arrivals Dock"
-	icon_state = "storage"
-
-/area/station/hangar/escape
-	name = "Escape Dock"
-	icon_state = "storage"
-
-/area/mining/hangar/
-	name = "Mining Dock"
-	icon_state = "storage"
-	sound_environment = 10
-	workplace = 1
-
-/area/station/hangar/science
-	name = "Research Dock"
-	icon_state = "storage"
-	teleport_blocked = 1
-
-/area/listeningpost
-	name = "Listening Post"
-	icon_state = "brig"
-	teleport_blocked = 1
-	do_not_irradiate = 1
-
-/area/listeningpost/power
-	name = "Listening Post Control Room"
-	icon_state = "engineering"
-
-/area/listeningpost/solars
-	name = "Listening Post Solar Array"
-	icon_state = "yellow"
+/*
+/area/prison/arrival_airlock
+	name = "Asylum Station Airlock"
+	icon_state = "green"
 	requires_power = 0
-	luminosity = 1
-	RL_Lighting = 0
 
-/area/tech_outpost
-	name = "Tech Outpost"
-	icon_state = "storage"
+/area/prison/control
+	name = "Warden's Office"
+	icon_state = "security"
 
-/area/drone
-	name = "Drone Assembly Outpost"
-	icon_state = "red"
-	sound_environment = 10
-	sound_group = "drone_factory"
+/area/prison/crew_quarters
+	name = "Asylum Staff Quarters"
+	icon_state = "security"
 
-/area/drone/zone
+/area/prison/closet
+	name = "Prison Supply Closet"
+	icon_state = "dk_yellow"
 
-/area/drone/crew_quarters
-	name = "Crew Quarters"
-	icon_state = "showers"
-	sound_environment = 4
-
-/area/drone/engineering
-	name = "Engineering"
-	icon_state = "yellow"
-	sound_environment = 5
-
-/area/drone/office
-	name = "Design Office"
-	icon_state = "purple"
-
-/area/drone/assembly
-	name = "Assembly Floor"
-	icon_state = "storage"
-
-/area/diner
-	sound_environment = 12
-
-/area/diner/hangar
-	name = "Diner Parking"
-	icon_state = "storage"
-
-/area/diner/kitchen
-	name = "Diner Kitchen"
-	icon_state = "purple"
-
-/area/diner/dining
-	name = "Diner Seating Area"
+/area/prison/hallway/north
+	name = "Asylum North Hallway"
 	icon_state = "yellow"
 
-/area/diner/bathroom
-	name = "Diner Bathroom"
-	icon_state = "showers"
+/area/prison/hallway/south
+	name = "Prison South Hallway"
+	icon_state = "yellow"
+
+/area/prison/hallway/west
+	name = "Prison West Hallway"
+	icon_state = "yellow"
+
+/area/prison/hallway/east
+	name = "Prison East Hallway"
+	icon_state = "yellow"
+
+/area/prison/morgue
+	name = "Asylum Morgue"
+	icon_state = "morgue"
+
+/area/prison/medical_research
+	name = "Prison Genetic Research"
+	icon_state = "medresearch"
+
+/area/prison/office
+	name = "Asylum Offices"
+	icon_state = "purple"
+
+/area/prison/office/checkpoint
+	name = "Nurse's Station"
+
+/area/prison/medical
+	name = "Asylum Operating Theatre"
+	icon_state = "medbay"
+
+/area/prison/solar
+	name = "Prison Solar Array"
+	icon_state = "storage"
+	requires_power = 0
+
+/area/prison/podbay
+	name = "Prison Podbay"
+	icon_state = "dk_yellow"
+
+/area/prison/solar_control
+	name = "Prison Solar Array Control"
+	icon_state = "dk_yellow"
+
+/area/prison/solitary
+	name = "Solitary Confinement"
+	icon_state = "brig"*/
+
+/area/prison/cell_block/wards
+	name = "Asylum Wards"
+	icon_state = "brig"
+	requires_power = 0
+
+/*/area/prison/cell_block/A
+	name = "Prison Cell Block A"
+	icon_state = "brig"
+
+/area/prison/cell_block/B
+	name = "Prison Cell Block B"
+	icon_state = "brig"
+
+/area/prison/cell_block/C
+	name = "Prison Cell Block C"
+	icon_state = "brig"
+*/
 
 ///////////////////////////////
 
-/area/station/ai_monitored
-	name = "AI Monitored Area"
-	var/obj/machinery/camera/motion/motioncamera = null
-	workplace = 1
+/*/area/factory
+	name = "Derelict Robot Factory"
+	icon_state = "start"
 
-/area/station/ai_monitored/New()
-	..()
-	// locate and store the motioncamera
-	spawn (20) // spawn on a delay to let turfs/objs load
-		for (var/obj/machinery/camera/motion/M in src)
-			motioncamera = M
-			return
-	return
+/area/factory/core
+	name = "Aged Computer Core"
+	icon_state = "ai"
 
-/area/station/ai_monitored/Entered(atom/movable/O)
-	..()
-	if (istype(O, /mob) && motioncamera)
-		motioncamera.newTarget(O)
-//
-/area/station/ai_monitored/Exited(atom/movable/O)
-	..()
-	if (istype(O, /mob) && motioncamera)
-		motioncamera.lostTarget(O)
-
-/area/station/ai_monitored/storage/eva
-	name = "EVA Storage"
-	icon_state = "eva"
-	sound_environment = 12
-
-/area/station/ai_monitored/storage/secure
-	name = "Secure Storage"
-	icon_state = "storage"
-	sound_environment = 12
-
-/area/station/ai_monitored/storage/emergency
-	name = "Emergency Storage"
-	icon_state = "storage"
-	sound_environment = 12
-
-/area/station/turret_protected/ai_upload
-	name = "AI Upload Chamber"
-	icon_state = "ai_upload"
-	sound_environment = 12
-
-/area/station/turret_protected/ai_upload_foyer
-	name = "AI Upload Foyer"
-	icon_state = "ai_foyer"
-	sound_environment = 12
-
-/area/station/turret_protected/ai
-	name = "AI Chamber"
-	icon_state = "ai_chamber"
-	sound_environment = 12
-
-/area/station/turret_protected/AIbasecore1
-	name = "AI Core 1"
-	icon_state = "AIt"
-	sound_environment = 12
-
-/area/station/turret_protected/AIbaseoutside
-	name = "AI outside"
-	icon_state = "AIt"
-	requires_power = 0
-	sound_environment = 12
-
-/area/station/turret_protected/AIbasecore2
-	name = "AI Core 2"
-	icon_state = "AIt"
-	sound_environment = 12
-
-/area/station/turret_protected/Zeta
-	name = "Computer Core"
-	icon_state = "AIt"
-	sound_environment = 12
-
-/area/station/turret_protected/armory
-	name = "Armory"
-	icon_state = "red"
-	sound_environment = 12
-
-/area/mining/mainasteroid
-	name = "Main Asteroid"
-	icon_state = "green"
-	RL_Lighting = 0
-
-/area/russian
-	name = "Kosmicheskoi Stantsii 13"
-	icon_state = "green"
-	sound_environment = 13
-
-/area/russian/radiation
-	name = "Kosmicheskoi Stantsii 13"
+/area/old_outpost
+	name = "Derelict Outpost"
 	icon_state = "yellow"
-	permarads = 1
+	sound_environment = 12
 
-/area/station/hydroponics
-	name = "Hydroponics"
-	icon_state = "hydro"
-	workplace = 1
+/area/old_outpost/engine
+	name = "Outpost Engine"
+	icon_state = "dk_yellow"
+	sound_environment = 10
 
-/area/station/hydroponics/lobby
-	name = "Hydroponics Lobby"
+/area/old_outpost/control
+	name = "Outpost Control"
+	icon_state = "purple"
+
+/area/old_outpost/medical
+	name = "VR Research"
+	icon_state = "medresearch"
+	sound_environment = 3
+
+/area/old_outpost/study
+	name = "Outpost Study"
 	icon_state = "green"
+	sound_environment = 4
 
-/area/station/owlery
-	name = "Owlery"
-	icon_state = "yellow"
-	sound_environment = 15
-	do_not_irradiate = 1
+/area/old_outpost/teleporter
+	name = "Outpost Teleporter"
+	icon_state = "teleporter"
+	sound_environment = 2*/
 
-/area/station/routingdepot
-	name = "Routing Depot"
-	icon_state = "depot"
-	sound_environment = 13
-	do_not_irradiate = 1
+// end areas
 
-	catering
-		name = "Cafeteria Router"
 
-	eva
-		name = "EVA Router"
-
-	engine
-		name = "Engine Router"
-
-	medsci
-		name = "Med-Sci Router"
-
-	security
-		name = "Security Router"
-
-	airbridge
-		name = "Airbridge Router"
 // ===
 
 /area/New()
@@ -2401,7 +2728,6 @@
 				T.oxygen = 0		// remove air if so specified for this area
 				T.n2 = 0
 				T.res_vars()
-
 	*/
 
 
@@ -2413,7 +2739,6 @@
 	while (A)
 		if (istype(A, /area))
 			return A
-
 		A = A.loc
 	return null
 */
@@ -2615,3 +2940,44 @@
 /area/station/turret_protected/proc/popUpTurrets()
 	for (var/obj/machinery/turret/aTurret in src.turret_list)
 		aTurret.popUp()
+
+/area/station/turret_protected/ai_upload
+	name = "AI Upload Chamber"
+	icon_state = "ai_upload"
+	sound_environment = 12
+
+/area/station/turret_protected/ai_upload_foyer
+	name = "AI Upload Foyer"
+	icon_state = "ai_foyer"
+	sound_environment = 12
+
+/area/station/turret_protected/ai
+	name = "AI Chamber"
+	icon_state = "ai_chamber"
+	sound_environment = 12
+
+/area/station/turret_protected/AIbasecore1
+	name = "AI Core 1"
+	icon_state = "AIt"
+	sound_environment = 12
+
+/area/station/turret_protected/AIbaseoutside
+	name = "AI outside"
+	icon_state = "AIt"
+	requires_power = 0
+	sound_environment = 12
+
+/area/station/turret_protected/AIbasecore2
+	name = "AI Core 2"
+	icon_state = "AIt"
+	sound_environment = 12
+
+/area/station/turret_protected/Zeta
+	name = "Computer Core"
+	icon_state = "AIt"
+	sound_environment = 12
+
+/area/station/turret_protected/armory
+	name = "Armory"
+	icon_state = "red"
+	sound_environment = 12

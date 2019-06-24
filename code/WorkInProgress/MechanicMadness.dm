@@ -1068,8 +1068,8 @@ var/list/mechanics_telepads = new/list()
 		var/inp = input(usr,"Please enter Expression:","Expression setting", expression) as text
 		if(length(inp))
 			var/regex/R = new(inp)
-			if(R.error)
-				boutput(usr, "<span style=\"color:red\">[R.error]</span>")
+			if(!R)
+				boutput(usr, "<span style=\"color:red\">Bad regex</span>")
 			else
 				inp = sanitize(html_encode(inp))
 				expression = inp
@@ -1128,8 +1128,8 @@ var/list/mechanics_telepads = new/list()
 		var/inp = input(usr,"Please enter Expression:","Expression setting", expression) as text
 		if(length(inp))
 			var/regex/R = new(inp)
-			if(R.error)
-				boutput(usr, "<span style=\"color:red\">[R.error]</span>")
+			if(!R)
+				boutput(usr, "<span style=\"color:red\">Bad regex</span>")
 			else
 				expression = inp
 				inp = sanitize(html_encode(inp))
@@ -2266,7 +2266,7 @@ var/list/mechanics_telepads = new/list()
 			if(Gun.canshoot())
 				var/atom/target = getTarget()
 				if(target)
-					//DEBUG("Target: [log_loc(target)]. Src: [src]")
+					//DEBUG_MESSAGE("Target: [log_loc(target)]. Src: [src]")
 					Gun.shoot(target, get_turf(src), src)
 			else
 				src.visible_message("<span class='game say'><span class='name'>[src]</span> beeps, \"The [Gun.name] has no [istype(Gun, /obj/item/gun/energy) ? "charge" : "ammo"] remaining.\"</span>")

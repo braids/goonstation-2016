@@ -50,7 +50,7 @@
 // pick strings from cache-- code/procs/string_cache.dm
 #define pick_string(filename, key) pick(strings(filename, key))
 
-#define DEBUG(x) if (debug_messages) message_coders(x)
+#define DEBUG_MESSAGE(x) if (debug_messages) message_coders(x)
 #define __red(x) text("<span style='color:red'>[]</span>", x)
 #define __blue(x) text("<span style='color:blue'>[]</span>", x)
 #define __green(x) text("<span style='color:green'>[]</span>", x)
@@ -73,3 +73,5 @@ proc/__btime__timeofhour()
 #endif
 
 #define CLAMP(V, MN, MX) max(MN, min(MX, V))
+
+#define LAGCHECK(x) while (world.tick_usage > x) sleep(world.tick_lag)

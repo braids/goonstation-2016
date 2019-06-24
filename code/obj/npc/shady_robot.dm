@@ -20,7 +20,7 @@
 	var/list/failed_purchase_dialogue = null
 	var/pickupdialogue = null
 	var/pickupdialoguefailure = null
-	var/list/trader_areas = list(/area/station/maintenance/aftsolar,/area/station/solar/aft,/area/station/maintenance/starboard,/area/station/maintenance/asmaint,/area/station/maintenance/starboardsolar,/area/station/solar/starboard,/area/station/maintenance/aft,/area/station/maintenance/disposal,/area/station/maintenance/apmaint,/area/station/maintenance/portsolar,/area/station/solar/port,/area/station/hallway/secondary/construction,/area/station/maintenance/fpmaint,/area/station/crew_quarters/quartersA,/area/station/crew_quarters/quartersB,/area/station/crew_quarters/observatory,/area/station/wreckage,/area/station/maintenance/fore,/area/station/maintenance/maintcentral)
+	var/list/trader_areas = list(/area/station/maintenance/southsolar,/area/station/solar/south,/area/station/maintenance/east,/area/station/maintenance/SEmaint,/area/station/maintenance/eastsolar,/area/station/solar/east,/area/station/maintenance/south,/area/station/maintenance/disposal,/area/station/maintenance/SWmaint,/area/station/maintenance/westsolar,/area/station/solar/west,/area/station/hallway/secondary/construction,/area/station/maintenance/NWmaint,/area/station/crew_quarters/quartersA,/area/station/crew_quarters/quartersB,/area/station/crew_quarters/observatory,/area/station/wreckage,/area/station/maintenance/north,/area/station/maintenance/maintcentral)
 	var/doing_a_thing = 0
 
 		// This list is in a specific order!!
@@ -200,30 +200,30 @@
 				if(access_name_lookup[A] in src.card_access)
 					//Click these to remove access
 					if (access_name_lookup[A] in civilian_access_list)
-						civilian_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=0'><font color=\"red\">[dd_replacetext(A, " ", "&nbsp")]</font></a>"
+						civilian_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=0'><font color=\"red\">[replacetext(A, " ", "&nbsp")]</font></a>"
 					if (access_name_lookup[A] in engineering_access_list)
-						engineering_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=0'><font color=\"red\">[dd_replacetext(A, " ", "&nbsp")]</font></a>"
+						engineering_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=0'><font color=\"red\">[replacetext(A, " ", "&nbsp")]</font></a>"
 					if (access_name_lookup[A] in supply_access_list)
-						supply_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=0'><font color=\"red\">[dd_replacetext(A, " ", "&nbsp")]</font></a>"
+						supply_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=0'><font color=\"red\">[replacetext(A, " ", "&nbsp")]</font></a>"
 					if (access_name_lookup[A] in research_access_list)
-						research_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=0'><font color=\"red\">[dd_replacetext(A, " ", "&nbsp")]</font></a>"
+						research_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=0'><font color=\"red\">[replacetext(A, " ", "&nbsp")]</font></a>"
 					if (access_name_lookup[A] in security_access_list)
-						security_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=0'><font color=\"red\">[dd_replacetext(A, " ", "&nbsp")]</font></a>"
+						security_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=0'><font color=\"red\">[replacetext(A, " ", "&nbsp")]</font></a>"
 					if (access_name_lookup[A] in command_access_list)
-						command_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=0'><font color=\"red\">[dd_replacetext(A, " ", "&nbsp")]</font></a>"
+						command_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=0'><font color=\"red\">[replacetext(A, " ", "&nbsp")]</font></a>"
 				else//Click these to add access
 					if (access_name_lookup[A] in civilian_access_list)
-						civilian_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=1'>[dd_replacetext(A, " ", "&nbsp")]</a>"
+						civilian_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=1'>[replacetext(A, " ", "&nbsp")]</a>"
 					if (access_name_lookup[A] in engineering_access_list)
-						engineering_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=1'>[dd_replacetext(A, " ", "&nbsp")]</a>"
+						engineering_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=1'>[replacetext(A, " ", "&nbsp")]</a>"
 					if (access_name_lookup[A] in supply_access_list)
-						supply_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=1'>[dd_replacetext(A, " ", "&nbsp")]</a>"
+						supply_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=1'>[replacetext(A, " ", "&nbsp")]</a>"
 					if (access_name_lookup[A] in research_access_list)
-						research_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=1'>[dd_replacetext(A, " ", "&nbsp")]</a>"
+						research_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=1'>[replacetext(A, " ", "&nbsp")]</a>"
 					if (access_name_lookup[A] in security_access_list)
-						security_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=1'>[dd_replacetext(A, " ", "&nbsp")]</a>"
+						security_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=1'>[replacetext(A, " ", "&nbsp")]</a>"
 					if (access_name_lookup[A] in command_access_list)
-						command_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=1'>[dd_replacetext(A, " ", "&nbsp")]</a>"
+						command_access += " <a href='?src=\ref[src];access=[access_name_lookup[A]];allowed=1'>[replacetext(A, " ", "&nbsp")]</a>"
 
 			if(37 in src.card_access)
 				special_access += " <a href='?src=\ref[src];access=37;allowed=0'><font color=\"red\">Head of Security</font></a>"

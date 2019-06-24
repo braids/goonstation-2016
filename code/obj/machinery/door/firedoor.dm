@@ -1,6 +1,27 @@
 /var/const/OPEN = 1
 /var/const/CLOSED = 2
 
+/obj/firedoor_spawn
+	name = "firedoor spawn"
+	desc = "Place this over a door to spawn a firedoor underneath. Sets direction, too!"
+	icon = 'icons/obj/doors/Doorfire.dmi'
+	icon_state = "f_spawn"
+
+	New()
+		..()
+		spawn(1)
+			src.setup()
+			spawn(10)
+				qdel(src)
+
+	proc/setup()
+		for (var/obj/machinery/door/D in src.loc)
+			var/obj/machinery/door/firedoor/pyro/P = new/obj/machinery/door/firedoor/pyro(src.loc)
+			P.loc = src.loc
+			P.dir = D.dir
+			P.layer = D.layer + 0.01
+			break
+
 /obj/machinery/door/firedoor
 	name = "Firelock"
 	desc = "Thick, fire-proof doors that prevent the spread of fire, they can only be pried open unless the fire alarm is cleared."
@@ -99,9 +120,9 @@
 				src.operating = 1
 
 				play_animation("opening")
+				update_icon(1)
 				sleep(15)
 				src.density = 0
-				update_icon()
 
 				src.RL_SetOpacity(0)
 				src.operating = 0
@@ -111,9 +132,9 @@
 				src.operating = 1
 
 				play_animation("closing")
+				update_icon(1)
 				src.density = 1
 				sleep(15)
-				update_icon()
 
 				src.RL_SetOpacity(1)
 				src.operating = 0
@@ -183,8 +204,8 @@
 
 		return 1
 
-/obj/machinery/door/firedoor/update_icon()
-	if (density)
+/obj/machinery/door/firedoor/update_icon(var/toggling = 0)
+	if(toggling? !density : density)
 		if (locked)
 			icon_state = "[icon_base]_locked"
 		else

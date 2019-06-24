@@ -44,7 +44,7 @@
 		if (src.health_multiplier != 1 && src.health_multiplier > 0)
 			src.health_max = src.health_max * src.health_multiplier
 			src.health = src.health_max
-			//DEBUG ("[src.name] [log_loc(src)] has [health] health / [health_max] max health ([health_multiplier] multiplier).")
+			//DEBUG_MESSAGE("[src.name] [log_loc(src)] has [health] health / [health_max] max health ([health_multiplier] multiplier).")
 
 		return
 
@@ -630,7 +630,9 @@
 	//layer = 99
 	pressure_resistance = 4*ONE_ATMOSPHERE
 	var/win_path = "/obj/window"
+	var/grille_path = "/obj/grille/steel"
 	var/full_win = 0 // adds a full window as well
+	var/no_dirs = 0 //ignore directional
 
 	New()
 		spawn(1)
@@ -639,15 +641,20 @@
 				qdel(src)
 
 	proc/set_up()
-		if (!locate(/obj/grille/steel) in get_turf(src))
-			new /obj/grille/steel(src.loc)
-		for (var/dir in cardinal)
-			var/turf/T = get_step(src, dir)
-			if (!locate(/obj/wingrille_spawn) in T)
-				var/obj/window/new_win = text2path("[src.win_path]/[dir2text(dir)]")
-				new new_win(src.loc)
+		if (!locate(text2path(src.grille_path)) in get_turf(src))
+			var/obj/grille/new_grille = text2path(src.grille_path)
+			new new_grille(src.loc)
+
+		if (!no_dirs)
+			for (var/dir in cardinal)
+				var/turf/T = get_step(src, dir)
+				if (!locate(/obj/wingrille_spawn) in T)
+					var/obj/window/new_win = text2path("[src.win_path]/[dir2text(dir)]")
+					new new_win(src.loc)
 		if (src.full_win)
-			if (!locate(text2path(src.win_path)) in get_turf(src))
+			if(!no_dirs || !locate(text2path(src.win_path)) in get_turf(src))
+				// if we have directional windows, there's already a window (or windows) from directional windows
+				// only check if there's no window if we're expecting there to be no window so spawn a full window
 				var/obj/window/new_win = text2path(src.win_path)
 				new new_win(src.loc)
 
@@ -688,5 +695,19 @@
 		win_path = "/obj/window/bulletproof"
 
 		full
+			name = "bulletproof window grille spawner"
+			icon_state = "br-wingrille"
 			icon_state = "b-wingrille_f"
 			full_win = 1
+
+	auto
+		name = "reinforced autowindow grille spawner"
+		win_path = "/obj/window/auto/reinforced"
+		full_win = 1
+		no_dirs = 1
+		icon_state = "r-wingrille_f"
+
+		crystal
+			name = "crystal autowindow grille spawner"
+			win_path = "/obj/window/auto/crystal/reinforced"
+			icon_state = "p-wingrille_f"

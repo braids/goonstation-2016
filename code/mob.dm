@@ -484,6 +484,8 @@
 // medals
 
 /mob/proc/unlock_medal(title, announce)
+	return //No medals 4 u
+
 	if (!src.client || !src.key)
 		return
 	else if (IsGuestKey(src.key))
@@ -694,7 +696,7 @@
 		if (second_message && M == second_target && M != first_target)
 			msg = second_message
 		M.show_message(msg, 1, blind_message, 2)
-		//DEBUG("<b>[M] recieves message: &quot;[msg]&quot;</b>")
+		//DEBUG_MESSAGE("<b>[M] recieves message: &quot;[msg]&quot;</b>")
 
 // it was about time we had this instead of just visible_message()
 /atom/proc/audible_message(var/message)
@@ -1948,9 +1950,9 @@
 			else
 				stat("Co-ordinates:", "([x], [y], [z])")
 
-			stat("Server Load:", "[world.cpu] ([lag_string])")
+			stat("Server Load:", "[world.cpu] ([world.cpu < 90 ? "No" : "Yes"])")
 		else
-			stat("Server Load:", lag_string) //Yes very useful a++
+			stat(world.cpu < 90 ? "Server Load: No" : "Server Load: Yes") //Yes very useful a++
 
 		if (ticker && ticker.round_elapsed_ticks)
 			stat(null, " ")
@@ -2003,7 +2005,8 @@
 
 /mob/verb/say_verb(message as text)
 	set name = "say"
-	if (src.client && !src.client.holder && url_regex && url_regex.Find(message))
+	//&& !src.client.holder
+	if (src.client && url_regex && url_regex.Find(message))
 		boutput(src, "<span style=\"color:blue\"><b>Web/BYOND links are not allowed in ingame chat.</b></span>")
 		boutput(src, "<span style=\"color:red\">&emsp;<b>\"[message]</b>\"</span>")
 		return
@@ -2605,7 +2608,7 @@
 	if (eyeblind != 0)
 		src.eye_blind = max(0, src.eye_blind + eyeblind)
 
-	//DEBUG("Eye damage applied: [amount]. Tempblind: [tempblind == 0 ? "N" : "Y"]")
+	//DEBUG_MESSAGE("Eye damage applied: [amount]. Tempblind: [tempblind == 0 ? "N" : "Y"]")
 	return 1
 
 /mob/proc/get_eye_blurry()
@@ -2625,7 +2628,7 @@
 			upper_cap = cap
 
 	src.eye_blurry = max(0, min(src.eye_blurry + amount, upper_cap))
-	//DEBUG("Amount is [amount], new eye blurry is [src.eye_blurry], cap is [upper_cap]")
+	//DEBUG_MESSAGE("Amount is [amount], new eye blurry is [src.eye_blurry], cap is [upper_cap]")
 	return 1
 
 /mob/proc/get_ear_damage(var/tempdeaf = 0)
@@ -2686,7 +2689,7 @@
 		else if (eardeaf > 0 && deaf_bypass == 0 && suppress_message == 0)
 			boutput(src, "<span style=\"color:red\">The ringing overpowers your ability to hear momentarily.</span>")
 
-	//DEBUG("Ear damage applied: [amount]. Tempdeaf: [tempdeaf == 0 ? "N" : "Y"]")
+	//DEBUG_MESSAGE("Ear damage applied: [amount]. Tempdeaf: [tempdeaf == 0 ? "N" : "Y"]")
 	return 1
 
 // No natural healing can occur if ear damage is above this threshold. Didn't want to make it yet another mob parent var.
