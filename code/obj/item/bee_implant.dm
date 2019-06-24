@@ -1,3 +1,9 @@
+/*	Bee Implant
+ *
+ *	By: Dieting Hippo
+ *	For AssJam13
+ */
+
 /obj/item/implant/bee
 	name = "bee implant"
 	icon_state = "implant-r"
